@@ -100,16 +100,45 @@ FROM moduli;
 --trovare la media del numero_ore dei moduli
 
 
+/*funzioni di aggregazione*/
 
 SELECT AVG(numero_ore) AS media_ore FROM moduli;
+---trovare il totale dei corsisti iscritti
+SELECT COUNT(*) AS totale_corsisti FROM corsisti;
 
+--trovare il numero dei corsisti iscritti al modulo con id 2
+SELECT COUNT(modulo_id) AS totale_corsisti_modulo_2 FROM iscrizioni WHERE modulo_id = 2;
 
+/*GROUP BY*/
+SELECT modulo_id, COUNT(modulo_id) FROM iscrizioni GROUP by modulo_id;
 
+-- trovare il numero dei moduli ai quali sono iscritti i corsisti indicando il nome e il cognome
+SELECT corsisti.nome, corsisti.cognome, COUNT(iscrizioni.modulo_id) AS totale_moduli
+FROM corsisti JOIN iscrizioni ON corsisti.id = iscrizioni.corsista_id
+GROUP BY corsisti.id;
 
+/*HAVING*/
+-- applicare un filtro tra gli estratti mostrando solo i corsisti con almeno 2 moduli iscritti
+SELECT corsisti.nome, corsisti.cognome, COUNT(iscrizioni.modulo_id) AS totale_moduli
+FROM corsisti JOIN iscrizioni ON corsisti.id = iscrizioni.corsista_id
+GROUP BY corsisti.id
+HAVING totale_moduli >= 2;
 
+/*ORDER BY*/
+/*ASC= ASCENDENTE, DESC=DISCENDENTE */
+SELECT corsisti.nome, corsisti.cognome, COUNT(iscrizioni.modulo_id) AS totale_moduli
+FROM corsisti JOIN iscrizioni ON corsisti.id = iscrizioni.corsista_id
+GROUP BY corsisti.id
+ORDER BY totale_moduli DESC;
 
+-- estrarre tutti i corsisti ordinandoli per età dal più giovane al più anziano
 
+SELECT nome, cognome, data_di_nascita, TIMESTAMPDIFF(YEAR, data_di_nascita, CURDATE()) AS eta
+FROM corsisti
+ORDER BY eta ASC;
 
+/*DISTINCT*/
 
+INSERT INTO `corsisti` (`id`, `nome`, `cognome`, `codice_fiscale`, `data_di_nascita`, `email`, `telefono`, `indirizzo_residenza`, `localita_residenza`, `provincia_residenza`, `cap_residenza`, `genere`) VALUES (NULL, 'Carlo', 'Severi', 'SVRCRL', '2000-02-05', 'carloserveri@gmail.com', NULL, 'via Veneto, 8', 'Roma', 'RM', '00201', 'M');
 
-
+SELECT DISTINCT(`localita_residenza`) FROM `corsisti`;
